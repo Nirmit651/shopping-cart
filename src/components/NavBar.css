@@ -1,0 +1,39 @@
+.navbar {
+  position: fixed;      /* stays at top even when scrolling */
+  top: 0;
+  left: 0;
+  width: 100vw;         /* full viewport width */
+  height: 64px;
+
+  background-color: #111;
+  color: white;
+
+  display: flex;
+  align-items: center;
+
+  z-index: 1000;        /* stay above page content */
+}
+
+.nav-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100vw;
+}
+
+.nav-content > h2 {
+    margin: 0px;
+    margin-left: 10px;
+    
+}
+
+.pages {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+}
+
+.pages > h3 {
+    margin: 0px;
+    margin-right: 15px;
+}
