@@ -1,19 +1,32 @@
-import './NavBar.css'
-import { Link } from "react-router-dom";
+import "./NavBar.css";
+import { Link, NavLink } from "react-router-dom";
 
-function NavBar({cartCount}) {
+function NavBar({ cartCount }) {
   return (
-    <nav className="navbar">
-        <div className="nav-content">
-            <h2>Store</h2>
-            <div className='pages'>
-                <h3><Link to="/">Home</Link></h3>
-                <h3><Link to="/shop">Shop</Link></h3>
-                <h3><Link to="/cart">Cart {cartCount}</Link></h3>
-            </div>
-        </div>
-    </nav>
-  )
+    <header className="navbar">
+      <div className="container nav-inner">
+        <Link to="/" className="brand">
+          <span className="brand-dot" />
+          Night Market
+        </Link>
+        <nav className="nav-links">
+          <NavLink to="/" className={({ isActive }) => (isActive ? "active" : "")}>
+            Home
+          </NavLink>
+          <NavLink to="/shop" className={({ isActive }) => (isActive ? "active" : "")}>
+            Shop
+          </NavLink>
+          <NavLink to="/cart" className={({ isActive }) => (isActive ? "active" : "")}>
+            Cart
+          </NavLink>
+        </nav>
+        <Link to="/cart" className="cart-pill">
+          <span>Cart</span>
+          <span className="cart-badge">{cartCount}</span>
+        </Link>
+      </div>
+    </header>
+  );
 }
 
-export default NavBar
+export default NavBar;

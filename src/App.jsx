@@ -3,43 +3,59 @@ import NavBar from './components/NavBar'
 import { useState, useEffect  } from 'react';
 import { Outlet } from 'react-router-dom';
 
+const MAX_QTY = 10;
+const clampQuantity = (value) => {
+  const safeNumber = Number.isFinite(value) ? value : 0;
+  return Math.min(MAX_QTY, Math.max(0, Math.round(safeNumber)));
+};
+
 function App() {
-
-  const [cartItems, setCartItems] = useState([]);
-
-  function addToCart(id, quantity) {
-
-    let cartClone = [];
-
-    for(let i = 0;i<cartItems.length;i++) {
-      let cartItem = {id: cartItems[i].id, quantity: cartItems[i].quantity}
-      cartClone.push(cartItem);
-    }
-
-    let duplicate = false;
-
-    for(let i = 0;i<cartItems.length;i++) {
-      //update quantity of cart item if it already exists in the array
-      if(cartClone[i].id == id) {
-        cartClone[i].quantity+=quantity;
-        duplicate = true;
-      }
-    }
-
-    if(duplicate) {
-      setCartItems(cartClone);
-    } else {
-      cartClone.push({id, quantity});
-      setCartItems(cartClone);
-    }
-
-  }
-  
+  const [cart, setCart] = useState({});
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  //fetch products
+  const addToCart = (id, quantity) => {
+    const amount = clampQuantity(quantity);
+    if (amount <= 0) return;
+
+    setCart((prev) => {
+      const next = { ...prev };
+      const updatedQty = clampQuantity((next[id] || 0) + amount);
+      if (updatedQty <= 0) {
+        delete next[id];
+      } else {
+        next[id] = updatedQty;
+      }
+      return next;
+    });
+  };
+
+  const updateCartQuantity = (id, quantity) => {
+    const amount = clampQuantity(quantity);
+    setCart((prev) => {
+      const next = { ...prev };
+      if (amount <= 0) {
+        delete next[id];
+      } else {
+        next[id] = amount;
+      }
+      return next;
+    });
+  };
+
+  const removeFromCart = (id) => {
+    setCart((prev) => {
+      const next = { ...prev };
+      delete next[id];
+      return next;
+    });
+  };
+
+  const resetCart = () => {
+    setCart({});
+  }
+
   useEffect(() => {
     const fetchProducts = async () => {
       try {
@@ -49,31 +65,38 @@ function App() {
         }
         const productData = await response.json();
         setProducts(productData);
-        console.log(productData)
         setError(null);
       } catch (err) {
         setError(err.message);
-        setProducts([]); // ← keep array
+        setProducts([]);
       } finally {
         setLoading(false);
       }
     };
 
     fetchProducts();
-    
-    
   }, []);
+
+  const totalItems = Object.values(cart).reduce((sum, qty) => sum + qty, 0);
 
   if (loading) return <p>Loading...</p>;
   if (error) return <p>{error}</p>;
   
   return (
-    <>
-      <NavBar cartCount={cartItems.length}/>
+    <div className="app-shell">
+      <NavBar cartCount={totalItems}/>
       <main className='page-content'>
-        <Outlet context={{products, addToCart, cartItems}}/>
+        <Outlet context={{
+          products,
+          addToCart,
+          cart,
+          updateCartQuantity,
+          removeFromCart,
+          maxQuantity: MAX_QTY,
+          resetCart
+        }}/>
       </main>
-    </>
+    </div>
   )
 }
 
