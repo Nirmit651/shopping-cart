@@ -1,5 +1,5 @@
 import { useOutletContext } from "react-router-dom";
-import CartItem from "../components/CartItem";
+import CartItem from "../components/citem";
 import "./Cart.css";
 
 export default function Cart() {

@@ -1,5 +1,5 @@
 import QuantitySelector from "./QuantitySelector";
-import "./cartItem.css";
+import "./citem.css";
 
 export default function CartItem({
   id,
